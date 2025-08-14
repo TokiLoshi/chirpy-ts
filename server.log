@@ -1,0 +1,9 @@
+
+> chirpy-ts@1.0.0 dev
+> npx tsc && node dist/index.js
+
+Server is running at http://localhost:8080
+Middleware
+[NON-OK] GET /non-existent-path - Status: 404
+Middleware
+[NON-OK] GET /non-existent-path - Status: 404
