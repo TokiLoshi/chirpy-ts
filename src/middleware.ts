@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { config } from "./config";
 
 type Middleware = (
 	req: Request,
@@ -27,5 +28,17 @@ export const middlewareLogResponses: Middleware = async (
 	// run server
 	// tee the output to server.log
 	// gitignore the server log
+	next();
+};
+
+export const middlewareMetrics: Middleware = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	res.on("finish", () => {
+		console.log("Middlware metrics");
+		config.fileserverHits += 1;
+	});
 	next();
 };
