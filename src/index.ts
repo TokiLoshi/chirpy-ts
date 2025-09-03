@@ -1,6 +1,10 @@
 import express from "express";
 import { handlerReadiness } from "./api/readiness.js";
-import { middlewareLogResponses, middlewareMetrics } from "./middleware.js";
+import {
+	middlewareLogResponses,
+	middlewareMetrics,
+	errorHandler,
+} from "./middleware.js";
 import { metricsCounter } from "./api/metrics/count.js";
 import { resetMetrics } from "./admin/reset/resetMetrics.js";
 import { adminMetrics } from "./admin/metrics/adminMetrics.js";
@@ -18,7 +22,10 @@ app.get("/api/metrics", metricsCounter);
 app.get("/admin/metrics", adminMetrics);
 app.post("/admin/reset", resetMetrics);
 app.use(express.json());
-app.post("/api/validate_chirp", validate);
+app.post("/api/validate_chirp", (req, res, next) => {
+	Promise.resolve(validate(req, res)).catch(next);
+});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
 	console.log(`Server is running at http://localhost:${PORT}`);
