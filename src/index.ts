@@ -16,12 +16,22 @@ app.use(express.text());
 
 app.use(middlewareLogResponses);
 app.use("/app", middlewareMetrics, express.static("./src/app"));
-app.get("/api/healthz", handlerReadiness);
-app.get("/api/metrics", metricsCounter);
 
-app.get("/admin/metrics", adminMetrics);
-app.post("/admin/reset", resetMetrics);
+app.get("/api/healthz", (req, res, next) => {
+	Promise.resolve(handlerReadiness(req, res)).catch(next);
+});
+app.get("/api/metrics", (req, res, next) => {
+	Promise.resolve(metricsCounter(req, res)).catch(next);
+});
+app.get("/admin/metrics", (req, res, next) => {
+	Promise.resolve(adminMetrics(req, res)).catch(next);
+});
+app.post("/admin/reset", (req, res, next) => {
+	Promise.resolve(resetMetrics(req, res)).catch(next);
+});
+
 app.use(express.json());
+
 app.post("/api/validate_chirp", (req, res, next) => {
 	Promise.resolve(validate(req, res)).catch(next);
 });
