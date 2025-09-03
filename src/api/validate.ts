@@ -31,13 +31,15 @@ export async function validate(req: Request, res: Response) {
 
 			return res.status(200).json({ cleanedBody: censored });
 		} else {
-			return res.status(400).json({
-				error: "Chirp is too long",
-			});
+			throw new Error();
+			// return res.status(400).json({
+			// 	error: "Chirp is too long",
+			// });
 		}
 	} catch (error) {
-		res.status(400).json({
-			error: error,
-		});
+		throw new Error();
+		// res.status(400).json({
+		// 	error: error,
+		// });
 	}
 }
