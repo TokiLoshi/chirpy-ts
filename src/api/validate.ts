@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { BadRequestError } from "../middleware";
 
 export async function validate(req: Request, res: Response) {
 	type responseData = {
@@ -31,7 +32,7 @@ export async function validate(req: Request, res: Response) {
 
 			return res.status(200).json({ cleanedBody: censored });
 		} else {
-			throw new Error();
+			throw new BadRequestError("Chirp is too long. Max length is 140");
 			// return res.status(400).json({
 			// 	error: "Chirp is too long",
 			// });
