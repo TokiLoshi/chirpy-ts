@@ -33,7 +33,7 @@ app.post("/admin/reset", (req, res, next) => {
 app.use(express.json());
 
 app.post("/api/validate_chirp", (req, res, next) => {
-	Promise.resolve(validate(req, res)).catch(next);
+	Promise.resolve(validate(req, res, next)).catch(next);
 });
 app.use(errorHandler);
 

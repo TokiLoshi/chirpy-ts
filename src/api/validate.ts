@@ -1,7 +1,11 @@
-import type { Request, Response } from "express";
-import { BadRequestError } from "../middleware";
+import type { Request, Response, NextFunction } from "express";
+import { BadRequestError } from "../middleware.js";
 
-export async function validate(req: Request, res: Response) {
+export async function validate(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
 	type responseData = {
 		body: string;
 	};
@@ -38,7 +42,7 @@ export async function validate(req: Request, res: Response) {
 			// });
 		}
 	} catch (error) {
-		throw new Error();
+		next(error);
 		// res.status(400).json({
 		// 	error: error,
 		// });
