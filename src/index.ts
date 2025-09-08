@@ -9,9 +9,16 @@ import { metricsCounter } from "./api/metrics/count.js";
 import { resetMetrics } from "./admin/reset/resetMetrics.js";
 import { adminMetrics } from "./admin/metrics/adminMetrics.js";
 import { validate } from "./api/validate.js";
+import postgres from "postgres";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { config } from "./config.js";
+import { newUser } from "./api/users/userQueries.js";
+
+const migrationClient = postgres(config.db.url, { max: 1 });
+await migrate(drizzle(migrationClient), config.db.migrationConfig);
 
 const app = express();
-const PORT = 8080;
 app.use(express.text());
 
 app.use(middlewareLogResponses);
@@ -27,16 +34,18 @@ app.get("/admin/metrics", (req, res, next) => {
 	Promise.resolve(adminMetrics(req, res)).catch(next);
 });
 app.post("/admin/reset", (req, res, next) => {
-	Promise.resolve(resetMetrics(req, res)).catch(next);
+	Promise.resolve(resetMetrics(req, res, next)).catch(next);
 });
 
 app.use(express.json());
-
+app.post("/api/users", (req, res, next) => {
+	Promise.resolve(newUser(req, res, next)).catch(next);
+});
 app.post("/api/validate_chirp", (req, res, next) => {
 	Promise.resolve(validate(req, res, next)).catch(next);
 });
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-	console.log(`Server is running at http://localhost:${PORT}`);
+app.listen(config.api.port, () => {
+	console.log(`Server is running at http://localhost:${config.api.port}`);
 });

@@ -37,14 +37,8 @@ export async function validate(
 			return res.status(200).json({ cleanedBody: censored });
 		} else {
 			throw new BadRequestError("Chirp is too long. Max length is 140");
-			// return res.status(400).json({
-			// 	error: "Chirp is too long",
-			// });
 		}
 	} catch (error) {
 		next(error);
-		// res.status(400).json({
-		// 	error: error,
-		// });
 	}
 }
