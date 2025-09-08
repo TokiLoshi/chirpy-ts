@@ -13,7 +13,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { config } from "./config.js";
 import { newUser } from "./api/users/userQueries.js";
-import { newChirp } from "./api/chirps/chirpQueries.js";
+import { newChirp, getAllChirps } from "./api/chirps/chirpQueries.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -40,6 +40,9 @@ app.post("/admin/reset", (req, res, next) => {
 app.use(express.json());
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(newUser(req, res, next)).catch(next);
+});
+app.get("/api/chirps", (req, res, next) => {
+	Promise.resolve(getAllChirps(res)).catch(next);
 });
 app.post("/api/chirps", (req, res, next) => {
 	Promise.resolve(newChirp(req, res, next)).catch(next);

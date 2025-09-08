@@ -1,6 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
-import { createChirp } from "../../db/queries/chirps.js";
+import { createChirp, getChirps } from "../../db/queries/chirps.js";
 import { BadRequestError } from "../../middleware.js";
+
+export async function getAllChirps(res: Response) {
+	const chirps = await getChirps();
+	console.log("Chirps: ", chirps);
+	return res.status(200).json(chirps);
+}
 
 export async function newChirp(
 	req: Request,
