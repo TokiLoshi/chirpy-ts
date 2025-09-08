@@ -7,7 +7,8 @@ export async function newUser(req: Request, res: Response, next: NextFunction) {
 
 	try {
 		const { email } = req.body;
-		const user = await createUser(email);
+		console.log(`Email: ${email} is type: ${typeof email}`);
+		const user = await createUser({ email });
 		return res.status(201).json({
 			id: user.id,
 			createdAt: user.createdAt,

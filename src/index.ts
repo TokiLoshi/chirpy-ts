@@ -8,12 +8,12 @@ import {
 import { metricsCounter } from "./api/metrics/count.js";
 import { resetMetrics } from "./admin/reset/resetMetrics.js";
 import { adminMetrics } from "./admin/metrics/adminMetrics.js";
-import { validate } from "./api/validate.js";
 import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { config } from "./config.js";
 import { newUser } from "./api/users/userQueries.js";
+import { newChirp } from "./api/chirps/chirpQueries.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -41,8 +41,8 @@ app.use(express.json());
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(newUser(req, res, next)).catch(next);
 });
-app.post("/api/validate_chirp", (req, res, next) => {
-	Promise.resolve(validate(req, res, next)).catch(next);
+app.post("/api/chirps", (req, res, next) => {
+	Promise.resolve(newChirp(req, res, next)).catch(next);
 });
 app.use(errorHandler);
 
