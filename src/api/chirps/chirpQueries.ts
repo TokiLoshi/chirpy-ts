@@ -1,11 +1,35 @@
 import type { Request, Response, NextFunction } from "express";
-import { createChirp, getChirps } from "../../db/queries/chirps.js";
+import {
+	createChirp,
+	getChirps,
+	getChirpById,
+} from "../../db/queries/chirps.js";
 import { BadRequestError } from "../../middleware.js";
 
 export async function getAllChirps(res: Response) {
 	const chirps = await getChirps();
 	console.log("Chirps: ", chirps);
 	return res.status(200).json(chirps);
+}
+
+export async function getSingleChirp(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	chirpId: string
+) {
+	// return a single chirp
+	res.header("Content-Type", "application/json");
+	console.log("Request: ", req.body);
+	try {
+		const chirp = await getChirpById(chirpId);
+		if (chirp) {
+			return res.status(200).json(chirp);
+		}
+		throw new BadRequestError("couldn't find chirp");
+	} catch (error) {
+		next(error);
+	}
 }
 
 export async function newChirp(
