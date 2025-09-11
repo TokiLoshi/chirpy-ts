@@ -15,6 +15,13 @@
       "when": 1757363578236,
       "tag": "0001_third_thaddeus_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757446140772,
+      "tag": "0002_square_lifeguard",
+      "breakpoints": true
     }
   ]
 }

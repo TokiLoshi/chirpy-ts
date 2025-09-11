@@ -1,14 +1,22 @@
 import type { Request, Response, NextFunction } from "express";
 import { createUser } from "../../db/queries/users.js";
+import { hashPassword } from "../../db/auth.js";
+import { BadRequestError } from "../../middleware.js";
 
 export async function newUser(req: Request, res: Response, next: NextFunction) {
 	res.header("Content-Type", "application/json");
 	console.log("REquest: ", req.body);
 
 	try {
-		const { email } = req.body;
-		console.log(`Email: ${email} is type: ${typeof email}`);
-		const user = await createUser({ email });
+		const { email, password } = req.body;
+		console.log(`Email: ${email} password ${password}`);
+		if (!password || !email) {
+			throw new BadRequestError("Email and password are required");
+		}
+
+		const hashedPassword = await hashPassword(password);
+
+		const user = await createUser({ email, hashedPassword });
 		return res.status(201).json({
 			id: user.id,
 			createdAt: user.createdAt,
