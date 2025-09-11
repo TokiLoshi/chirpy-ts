@@ -3,10 +3,6 @@ import { checkPasswordHash } from "../../db/auth.js";
 import { BadRequestError, UnauthorizedError } from "../../middleware.js";
 import { getUserByEmail } from "../../db/queries/users.js";
 
-function makeJWT(userID: string, expiresIn: number, secret: string): string {
-	return "";
-}
-
 export async function login(req: Request, res: Response, next: NextFunction) {
 	res.header("Content-Type", "application/json");
 	console.log("Request: ", req.body);
