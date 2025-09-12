@@ -5,10 +5,11 @@ import {
 	getChirpById,
 } from "../../db/queries/chirps.js";
 import { BadRequestError } from "../../middleware.js";
+import { getBearerToken, validateJWT } from "../../db/auth.js";
+import { config } from "../../config.js";
 
 export async function getAllChirps(res: Response) {
 	const chirps = await getChirps();
-	console.log("Chirps: ", chirps);
 	return res.status(200).json(chirps);
 }
 
@@ -20,7 +21,6 @@ export async function getSingleChirp(
 ) {
 	// return a single chirp
 	res.header("Content-Type", "application/json");
-	console.log("Request: ", req.body);
 	try {
 		const chirp = await getChirpById(chirpId);
 		if (chirp) {
@@ -38,7 +38,6 @@ export async function newChirp(
 	next: NextFunction
 ) {
 	res.header("Content-Type", "application/json");
-	console.log("Request: ", req.body);
 	type responseData = {
 		body: string;
 	};
@@ -65,18 +64,32 @@ export async function newChirp(
 
 			const censored = cleanedChirp.join(" ");
 
-			const { userId } = req.body;
+			// const { userId } = req.body;
 
-			if (!userId) throw new BadRequestError("user Id is missing");
+			let token;
+			let validToken;
+			try {
+				token = getBearerToken(req);
 
-			const newChirp = await createChirp({ userId: userId, body: censored });
-			return res.status(201).json({
-				id: newChirp.id,
-				createdAt: newChirp.createdAt,
-				updatedAt: newChirp.updatedAt,
-				body: newChirp.body,
-				userId: newChirp.userId,
-			});
+				validToken = validateJWT(token, config.secret);
+				console.log("Valid token? ", validToken);
+				const newChirp = await createChirp({
+					userId: validToken,
+					body: censored,
+				});
+				return res.status(201).json({
+					id: newChirp.id,
+					createdAt: newChirp.createdAt,
+					updatedAt: newChirp.updatedAt,
+					body: newChirp.body,
+					userId: validToken,
+				});
+			} catch (error) {
+				console.log("Error in chirp: ", error);
+				next(error);
+			}
+
+			// if (!userId) throw new BadRequestError("user Id is missing");
 		} else {
 			throw new BadRequestError("Chirp is too long. Max length is 140");
 		}

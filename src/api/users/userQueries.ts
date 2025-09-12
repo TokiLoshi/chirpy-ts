@@ -5,11 +5,9 @@ import { BadRequestError } from "../../middleware.js";
 
 export async function newUser(req: Request, res: Response, next: NextFunction) {
 	res.header("Content-Type", "application/json");
-	console.log("REquest: ", req.body);
 
 	try {
 		const { email, password } = req.body;
-		console.log(`Email: ${email} password ${password}`);
 		if (!password || !email) {
 			throw new BadRequestError("Email and password are required");
 		}

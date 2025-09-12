@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
-import { BadRequestError } from "../middleware";
+import { BadRequestError } from "../middleware.js";
+import { Request } from "express";
 
 export async function hashPassword(password: string): Promise<string> {
 	const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,6 +33,7 @@ export function makeJWT(
 		iat: currentTime,
 		exp: expiry,
 	};
+
 	const token = jwt.sign(payload, secret, { algorithm: "HS256" });
 	return token;
 }
@@ -39,13 +41,23 @@ export function makeJWT(
 export function validateJWT(tokenString: string, secret: string): string {
 	try {
 		const decoded = jwt.verify(tokenString, secret) as JwtPayload;
+
 		if (!decoded.sub || !decoded.iss) {
 			throw new BadRequestError("user id not found");
 		}
-
 		const userId = decoded.sub;
 		return userId;
 	} catch (error) {
 		throw new BadRequestError("jwt is invalid");
 	}
+}
+
+export function getBearerToken(req: Request): string {
+	const token = req.get("Authorization");
+
+	if (!token) {
+		throw new BadRequestError("token not present");
+	}
+	const cleanedToken = token.substring(7).trim();
+	return cleanedToken;
 }

@@ -71,13 +71,8 @@ export function middlewareMetrics(
 	__: Response,
 	next: NextFunction
 ) {
-	// if (req.url === "/app/") {
-	// 	config.fileserverHits += 1;
-	// }
 	console.log(`Getting midleware metrics: ${config.api.fileserverHits}`);
 	config.api.fileserverHits++;
-	// res.on("finish", () => {
-	// 	console.log("Middlware metrics");
-	// });
+
 	next();
 }
