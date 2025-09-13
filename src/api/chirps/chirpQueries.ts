@@ -72,7 +72,6 @@ export async function newChirp(
 				token = getBearerToken(req);
 
 				validToken = validateJWT(token, config.secret);
-				console.log("Valid token? ", validToken);
 				const newChirp = await createChirp({
 					userId: validToken,
 					body: censored,
@@ -85,8 +84,8 @@ export async function newChirp(
 					userId: validToken,
 				});
 			} catch (error) {
-				console.log("Error in chirp: ", error);
-				next(error);
+				console.log("Error with token in chirps", error);
+				throw new BadRequestError("invalid jwt");
 			}
 
 			// if (!userId) throw new BadRequestError("user Id is missing");

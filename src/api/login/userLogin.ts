@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { checkPasswordHash, makeJWT } from "../../db/auth.js";
+import { checkPasswordHash, makeJWT, makeRefreshToken } from "../../db/auth.js";
 import { BadRequestError, UnauthorizedError } from "../../middleware.js";
-import { getUserByEmail } from "../../db/queries/users.js";
+import { getUserByEmail, insertRefreshToken } from "../../db/queries/users.js";
 import { config } from "../../config.js";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
@@ -29,18 +29,34 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 		if (!passwordMatch) {
 			throw new UnauthorizedError("incorrect email or password");
 		}
-		const expires = req.body.expiresInSeconds;
-		let expiry = expires;
-		if ((!expiry || expiry > 3600) && expiry !== 0) {
-			expiry = 3600;
-		}
+
+		const expiry = 3600;
 		const token = makeJWT(user.id, expiry, config.secret);
+		const refreshTokenString = makeRefreshToken();
+
+		const refreshExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+
+		const refreshToken = {
+			token: refreshTokenString,
+			userId: user.id,
+			expiresAt: refreshExpiry,
+		};
+
+		const insertedRefreshToken = await insertRefreshToken(refreshToken);
+		if (!insertedRefreshToken) {
+			console.log(
+				"Something went wrong with the refresh token: ",
+				insertedRefreshToken
+			);
+		}
+
 		return res.status(200).json({
 			id: user.id,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
 			email: user.email,
 			token: token,
+			refreshToken: refreshToken,
 		});
 		// If passwords match retur 20- and copy of user resource (not password)
 	} catch (error) {

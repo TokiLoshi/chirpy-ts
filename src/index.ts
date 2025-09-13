@@ -19,6 +19,8 @@ import {
 	getSingleChirp,
 } from "./api/chirps/chirpQueries.js";
 import { login } from "./api/login/userLogin.js";
+import { generateRefresh } from "./api/refresh/refreshToken.js";
+import { revokeToken } from "./api/revoke/revokeToken.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -59,6 +61,12 @@ app.get("/api/chirps/:id", (req, res, next) => {
 });
 app.post("/api/chirps", (req, res, next) => {
 	Promise.resolve(newChirp(req, res, next)).catch(next);
+});
+app.post("/api/refresh", (req, res, next) => {
+	Promise.resolve(generateRefresh(req, res)).catch(next);
+});
+app.post("/api/revoke", (req, res, next) => {
+	Promise.resolve(revokeToken(req, res)).catch(next);
 });
 app.use(errorHandler);
 

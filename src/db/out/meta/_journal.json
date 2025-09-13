@@ -22,6 +22,13 @@
       "when": 1757446140772,
       "tag": "0002_square_lifeguard",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1757707263536,
+      "tag": "0003_slimy_spectrum",
+      "breakpoints": true
     }
   ]
 }

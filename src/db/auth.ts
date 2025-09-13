@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
 import { BadRequestError } from "../middleware.js";
 import { Request } from "express";
+import { randomBytes } from "crypto";
 
 export async function hashPassword(password: string): Promise<string> {
 	const hashedPassword = await bcrypt.hash(password, 10);
@@ -60,4 +61,10 @@ export function getBearerToken(req: Request): string {
 	}
 	const cleanedToken = token.substring(7).trim();
 	return cleanedToken;
+}
+
+export function makeRefreshToken() {
+	const randomString = randomBytes(256).toString("hex");
+	console.log("Random bytes: ", randomString);
+	return randomString;
 }
