@@ -6,8 +6,10 @@ import { config } from "../../config.js";
 
 export async function generateRefresh(req: Request, res: Response) {
 	const refreshToken = getBearerToken(req);
+	console.log("Refresh token: ", refreshToken);
 
 	const user = await getRefreshToken(refreshToken);
+	console.log("User in Refresh: ", user);
 	if (!user) {
 		return res.status(401).json({ error: "invalid refresh token " });
 	}

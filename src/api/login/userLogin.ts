@@ -31,15 +31,15 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 		}
 
 		const expiry = 3600;
-		const token = makeJWT(user.id, expiry, config.secret);
+		const accessToken = makeJWT(user.id, expiry, config.secret);
 		const refreshTokenString = makeRefreshToken();
 
-		const refreshExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+		const refreshTokenExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
 
 		const refreshToken = {
 			token: refreshTokenString,
 			userId: user.id,
-			expiresAt: refreshExpiry,
+			expiresAt: refreshTokenExpiry,
 		};
 
 		const insertedRefreshToken = await insertRefreshToken(refreshToken);
@@ -55,8 +55,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
 			email: user.email,
-			token: token,
-			refreshToken: refreshToken,
+			token: accessToken,
+			refreshToken: refreshToken.token,
 		});
 		// If passwords match retur 20- and copy of user resource (not password)
 	} catch (error) {
