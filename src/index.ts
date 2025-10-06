@@ -48,6 +48,9 @@ app.use(express.json());
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(newUser(req, res, next)).catch(next);
 });
+app.put("/api/users", (req, res, next) => {
+	Promise.resolve(newUser(req, res, next)).catch(next);
+});
 app.post("/api/login", (req, res, next) => {
 	Promise.resolve(login(req, res, next)).catch(next);
 });

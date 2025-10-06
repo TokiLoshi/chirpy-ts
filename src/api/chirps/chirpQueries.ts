@@ -45,6 +45,9 @@ export async function newChirp(
 	const badWords = ["kerfuffle", "sharbert", "fornax"];
 
 	try {
+		const token = getBearerToken(req);
+		const validToken = validateJWT(token, config.secret);
+
 		// Add validation logic and delete api
 		const { body }: responseData = req.body;
 		const trimmed = body.trim();
@@ -66,31 +69,21 @@ export async function newChirp(
 
 			// const { userId } = req.body;
 
-			let token;
-			let validToken;
-			try {
-				token = getBearerToken(req);
-
-				validToken = validateJWT(token, config.secret);
-				const newChirp = await createChirp({
-					userId: validToken,
-					body: censored,
-				});
-				return res.status(201).json({
-					id: newChirp.id,
-					createdAt: newChirp.createdAt,
-					updatedAt: newChirp.updatedAt,
-					body: newChirp.body,
-					userId: validToken,
-				});
-			} catch (error) {
-				console.log("Error with token in chirps", error);
-				throw new BadRequestError("invalid jwt");
-			}
+			const newChirp = await createChirp({
+				userId: validToken,
+				body: censored,
+			});
+			return res.status(201).json({
+				id: newChirp.id,
+				createdAt: newChirp.createdAt,
+				updatedAt: newChirp.updatedAt,
+				body: newChirp.body,
+				userId: validToken,
+			});
 
 			// if (!userId) throw new BadRequestError("user Id is missing");
 		} else {
-			throw new BadRequestError("Chirp is too long. Max length is 140");
+			throw new BadRequestError("Chirp is too long. Max length is 140.");
 		}
 	} catch (error) {
 		next(error);

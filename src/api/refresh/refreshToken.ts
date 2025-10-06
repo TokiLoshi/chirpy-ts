@@ -10,8 +10,13 @@ export async function generateRefresh(req: Request, res: Response) {
 
 	const user = await getRefreshToken(refreshToken);
 	console.log("User in Refresh: ", user);
-	if (!user) {
+	if (!user || user.revokedAt !== null) {
 		return res.status(401).json({ error: "invalid refresh token " });
+	}
+
+	const now = new Date();
+	if (user.expiresAt < now) {
+		return res.status(401).json({ error: "refresh token expiresd " });
 	}
 	const accesssExpirySeconds = 60 * 60;
 	const token = makeJWT(user.userId, accesssExpirySeconds, config.secret);

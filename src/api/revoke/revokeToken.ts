@@ -14,5 +14,5 @@ export async function revokeToken(req: Request, res: Response) {
 		return res.status(401).json({ error: "invalid token" });
 	}
 	await updateToken(currentToken);
-	return res.status(204);
+	return res.status(204).send();
 }

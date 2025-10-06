@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
-import { BadRequestError } from "../middleware.js";
+import { BadRequestError, UnauthorizedError } from "../middleware.js";
 import { Request } from "express";
 import { randomBytes } from "crypto";
 
@@ -44,12 +44,12 @@ export function validateJWT(tokenString: string, secret: string): string {
 		const decoded = jwt.verify(tokenString, secret) as JwtPayload;
 
 		if (!decoded.sub || !decoded.iss) {
-			throw new BadRequestError("user id not found");
+			throw new UnauthorizedError("user id not found");
 		}
 		const userId = decoded.sub;
 		return userId;
 	} catch (error) {
-		throw new BadRequestError("jwt is invalid");
+		throw new UnauthorizedError("jwt is invalid");
 	}
 }
 
