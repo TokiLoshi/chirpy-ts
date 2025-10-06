@@ -17,6 +17,7 @@ import {
 	newChirp,
 	getAllChirps,
 	getSingleChirp,
+	deleteChirp,
 } from "./api/chirps/chirpQueries.js";
 import { login } from "./api/login/userLogin.js";
 import { generateRefresh } from "./api/refresh/refreshToken.js";
@@ -64,6 +65,10 @@ app.get("/api/chirps/:id", (req, res, next) => {
 });
 app.post("/api/chirps", (req, res, next) => {
 	Promise.resolve(newChirp(req, res, next)).catch(next);
+});
+app.delete("/api/chirps/:chirpID", (req, res, next) => {
+	const id = req.params.chirpID;
+	Promise.resolve(deleteChirp(req, res, next, id)).catch(next);
 });
 app.post("/api/refresh", (req, res, next) => {
 	Promise.resolve(generateRefresh(req, res)).catch(next);

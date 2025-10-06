@@ -3,8 +3,14 @@ import {
 	createChirp,
 	getChirps,
 	getChirpById,
+	deleteSingleChirp,
 } from "../../db/queries/chirps.js";
-import { BadRequestError } from "../../middleware.js";
+import {
+	BadRequestError,
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+} from "../../middleware.js";
 import { getBearerToken, validateJWT } from "../../db/auth.js";
 import { config } from "../../config.js";
 
@@ -26,7 +32,7 @@ export async function getSingleChirp(
 		if (chirp) {
 			return res.status(200).json(chirp);
 		}
-		throw new BadRequestError("couldn't find chirp");
+		throw new NotFoundError("couldn't find chirp");
 	} catch (error) {
 		next(error);
 	}
@@ -88,4 +94,40 @@ export async function newChirp(
 	} catch (error) {
 		next(error);
 	}
+}
+
+export async function deleteChirp(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	chirpID: string
+) {
+	// check the token in the header
+	const token = getBearerToken(req);
+	const userId = validateJWT(token, config.secret);
+
+	if (!userId) {
+		throw new BadRequestError("invalid userId");
+	}
+	console.log("CHirp id: ", chirpID);
+
+	// only owners of the chirp can delete it
+	const chirp = await getChirpById(chirpID);
+	console.log("Chirp: ", chirp);
+
+	// if chirp is not found return 404
+	if (!chirp) {
+		throw new NotFoundError("chirp not found");
+	}
+
+	// if the user is not the owner of the chirp return 403 NotFoundError
+	if (userId !== chirp.userId) {
+		throw new ForbiddenError("user does not match");
+	}
+
+	// Delete chirp by ID
+	await deleteSingleChirp(chirpID);
+	// Delete chirp in database
+	return res.status(204).send();
+	// If chirp is deleted successfully return 204
 }
