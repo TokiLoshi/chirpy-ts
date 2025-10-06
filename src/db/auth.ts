@@ -68,3 +68,12 @@ export function makeRefreshToken() {
 	console.log("Random bytes: ", randomString);
 	return randomString;
 }
+
+export function getAPIKey(req: Request) {
+	const token = req.get("Authorization");
+	if (!token) {
+		throw new UnauthorizedError("token missing from auth header");
+	}
+	const cleanedKey = token.replace("ApiKey", "").trim();
+	return cleanedKey;
+}

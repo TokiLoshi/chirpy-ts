@@ -18,6 +18,7 @@ export async function getUserByEmail(email: string) {
 
 export async function getUserById(userId: string) {
 	const [result] = await db.select().from(users).where(eq(users.id, userId));
+	return result;
 }
 
 export async function deleteUsers() {
@@ -57,6 +58,15 @@ export async function updateUser(
 			hashedPassword: password,
 		})
 		.where(eq(users.id, userId))
+		.returning();
+	return result;
+}
+
+export async function upgradeUser(id: string) {
+	const [result] = await db
+		.update(users)
+		.set({ isChirpyRed: true })
+		.where(eq(users.id, id))
 		.returning();
 	return result;
 }

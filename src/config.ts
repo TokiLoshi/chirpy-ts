@@ -4,6 +4,7 @@ type Config = {
 	api: APIConfig;
 	db: DBConfig;
 	secret: string;
+	polkaKey: string;
 };
 
 type APIConfig = {
@@ -40,4 +41,5 @@ export const config: Config = {
 		migrationConfig,
 	},
 	secret: envOrThrow("SECRET").trim(),
+	polkaKey: envOrThrow("POLKA_KEY").trim(),
 };

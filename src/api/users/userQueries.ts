@@ -21,6 +21,7 @@ export async function newUser(req: Request, res: Response, next: NextFunction) {
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
 			email: user.email,
+			isChirpyRed: user.isChirpyRed,
 		});
 	} catch (error) {
 		next(error);
@@ -58,12 +59,9 @@ export async function editUser(
 			createdAt: updatedUser.createdAt,
 			updatedAt: updatedUser.updatedAt,
 			email: updatedUser.email,
+			isChirpyRed: updatedUser.isChirpyRed,
 		});
 	} catch (error) {
 		next(error);
 	}
-
-	// Update hashed password and email in db
-	// if no token send 401
-	// if all good send 200 and User without password
 }

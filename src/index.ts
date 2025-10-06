@@ -22,6 +22,14 @@ import {
 import { login } from "./api/login/userLogin.js";
 import { generateRefresh } from "./api/refresh/refreshToken.js";
 import { revokeToken } from "./api/revoke/revokeToken.js";
+import { polkaUpdate } from "./api/polka/upgradeUser.js";
+
+type polkaHook = {
+	event: string;
+	data: {
+		userId: string;
+	};
+};
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -76,6 +84,10 @@ app.post("/api/refresh", (req, res, next) => {
 app.post("/api/revoke", (req, res, next) => {
 	Promise.resolve(revokeToken(req, res)).catch(next);
 });
+app.post("/api/polka/webhooks", (req, res, next) => {
+	Promise.resolve(polkaUpdate(req, res, next)).catch(next);
+});
+
 app.use(errorHandler);
 
 app.listen(config.api.port, () => {

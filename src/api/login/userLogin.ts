@@ -57,6 +57,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 			email: user.email,
 			token: accessToken,
 			refreshToken: refreshToken.token,
+			isChirpyRed: user.isChirpyRed,
 		});
 		// If passwords match retur 20- and copy of user resource (not password)
 	} catch (error) {
