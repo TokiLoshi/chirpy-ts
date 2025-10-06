@@ -12,7 +12,7 @@ import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { config } from "./config.js";
-import { newUser } from "./api/users/userQueries.js";
+import { editUser, newUser } from "./api/users/userQueries.js";
 import {
 	newChirp,
 	getAllChirps,
@@ -49,7 +49,7 @@ app.post("/api/users", (req, res, next) => {
 	Promise.resolve(newUser(req, res, next)).catch(next);
 });
 app.put("/api/users", (req, res, next) => {
-	Promise.resolve(newUser(req, res, next)).catch(next);
+	Promise.resolve(editUser(req, res, next)).catch(next);
 });
 app.post("/api/login", (req, res, next) => {
 	Promise.resolve(login(req, res, next)).catch(next);

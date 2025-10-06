@@ -57,7 +57,7 @@ export function getBearerToken(req: Request): string {
 	const token = req.get("Authorization");
 
 	if (!token) {
-		throw new BadRequestError("token not present");
+		throw new UnauthorizedError("token not present");
 	}
 	const cleanedToken = token.substring(7).trim();
 	return cleanedToken;
