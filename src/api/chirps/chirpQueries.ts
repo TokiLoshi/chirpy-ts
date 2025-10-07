@@ -4,6 +4,7 @@ import {
 	getChirps,
 	getChirpById,
 	deleteSingleChirp,
+	getChirpsByAuthor,
 } from "../../db/queries/chirps.js";
 import {
 	BadRequestError,
@@ -14,8 +15,24 @@ import {
 import { getBearerToken, validateJWT } from "../../db/auth.js";
 import { config } from "../../config.js";
 
-export async function getAllChirps(res: Response) {
-	const chirps = await getChirps();
+export async function getAllChirps(req: Request, res: Response) {
+	let authorId = "";
+	let authorIdQuery = req.query.authorId;
+	if (typeof authorIdQuery === "string") {
+		authorId = authorIdQuery;
+	}
+	if (authorIdQuery) {
+		const authoredChirps = await getChirpsByAuthor(authorId);
+		console.log("Authored chirps: ", authoredChirps);
+
+		return res.status(200).json(authoredChirps);
+	}
+	let sortValue = "asc";
+	if (typeof req.query.sort === "string") {
+		sortValue = req.query.sort;
+	}
+	const chirps = await getChirps(sortValue);
+
 	return res.status(200).json(chirps);
 }
 

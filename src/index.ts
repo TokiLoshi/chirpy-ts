@@ -65,7 +65,7 @@ app.post("/api/login", (req, res, next) => {
 });
 
 app.get("/api/chirps", (req, res, next) => {
-	Promise.resolve(getAllChirps(res)).catch(next);
+	Promise.resolve(getAllChirps(req, res)).catch(next);
 });
 app.get("/api/chirps/:id", (req, res, next) => {
 	const id = req.params.id;
